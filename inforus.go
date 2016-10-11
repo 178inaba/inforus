@@ -8,19 +8,28 @@ import (
 	log "github.com/Sirupsen/logrus"
 )
 
-// Skip the following.
+// Skip the following 3 frames.
 // runtime.Callers
 // github.com/178inaba/inforus.Hook.Fire
 // github.com/178inaba/inforus.(*Hook).Fire
 const skipFrameCnt = 3
 
+// AddHookAllInfo is ...
+func AddHookAllInfo() {
+	log.AddHook(Hook{file: true, function: true, line: true})
+}
+
 // AddHook is ...
-func AddHook() {
-	log.AddHook(Hook{})
+func AddHook(file, function, line bool) {
+	log.AddHook(Hook{file: file, function: function, line: line})
 }
 
 // Hook is ...
-type Hook struct{}
+type Hook struct {
+	file     bool
+	function bool
+	line     bool
+}
 
 // Levels is ...
 func (h Hook) Levels() []log.Level {
@@ -37,9 +46,18 @@ func (h Hook) Fire(entry *log.Entry) error {
 		name := fu.Name()
 		if !strings.Contains(name, "github.com/Sirupsen/logrus") {
 			file, line := fu.FileLine(pc[i] - 1)
-			entry.Data["file"] = path.Base(file)
-			entry.Data["func"] = path.Base(name)
-			entry.Data["line"] = line
+			if h.file {
+				entry.Data["file"] = path.Base(file)
+			}
+
+			if h.function {
+				entry.Data["func"] = path.Base(name)
+			}
+
+			if h.line {
+				entry.Data["line"] = line
+			}
+
 			break
 		}
 	}
