@@ -1,3 +1,3 @@
 # Inforus
 
-Inforus is a hook of display **filename**, **function name**, **line number** for [Logrus](https://github.com/Sirupsen/logrus)
+Inforus is a hook [Logrus](https://github.com/Sirupsen/logrus) to display the **filename**, **function name**, **line number**.
