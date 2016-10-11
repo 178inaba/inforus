@@ -8,6 +8,12 @@ import (
 	log "github.com/Sirupsen/logrus"
 )
 
+// Skip the following.
+// runtime.Callers
+// github.com/178inaba/filerus.Hook.Fire
+// github.com/178inaba/filerus.(*Hook).Fire
+const skipFrameCnt = 3
+
 // AddHook is ...
 func AddHook() {
 	log.AddHook(Hook{})
@@ -23,11 +29,11 @@ func (h Hook) Levels() []log.Level {
 
 // Fire is ...
 func (h Hook) Fire(entry *log.Entry) error {
-	pc := make([]uintptr, 3, 3)
-	cnt := runtime.Callers(6, pc)
+	pc := make([]uintptr, 64)
+	cnt := runtime.Callers(skipFrameCnt, pc)
 
 	for i := 0; i < cnt; i++ {
-		fu := runtime.FuncForPC(pc[i] - 1)
+		fu := runtime.FuncForPC(pc[i])
 		name := fu.Name()
 		if !strings.Contains(name, "github.com/Sirupsen/logrus") {
 			file, line := fu.FileLine(pc[i] - 1)
