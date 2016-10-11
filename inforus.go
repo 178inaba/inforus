@@ -1,4 +1,4 @@
-package filerus
+package inforus
 
 import (
 	"path"
@@ -10,8 +10,8 @@ import (
 
 // Skip the following.
 // runtime.Callers
-// github.com/178inaba/filerus.Hook.Fire
-// github.com/178inaba/filerus.(*Hook).Fire
+// github.com/178inaba/inforus.Hook.Fire
+// github.com/178inaba/inforus.(*Hook).Fire
 const skipFrameCnt = 3
 
 // AddHook is ...
