@@ -14,9 +14,9 @@ import (
 // github.com/178inaba/inforus.(*Hook).Fire
 const skipFrameCnt = 3
 
-// AddHookAllInfo is ...
-func AddHookAllInfo() {
-	log.AddHook(Hook{file: true, function: true, line: true})
+// AddHookDefault is ...
+func AddHookDefault() {
+	log.AddHook(Hook{file: true, function: false, line: true})
 }
 
 // AddHook is ...
