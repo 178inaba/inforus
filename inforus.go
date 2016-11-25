@@ -4,6 +4,7 @@ import (
 	"path"
 	"runtime"
 	"strings"
+	"sync"
 
 	log "github.com/Sirupsen/logrus"
 )
@@ -16,24 +17,38 @@ const skipFrameCnt = 3
 
 // AddHookDefault is ...
 func AddHookDefault() {
-	log.AddHook(Hook{file: true, function: false, line: true})
+	log.AddHook(Hook{
+		mu:       &sync.Mutex{},
+		file:     true,
+		line:     true,
+		function: false,
+		levels:   log.AllLevels,
+	})
 }
 
 // AddHook is ...
-func AddHook(file, function, line bool) {
-	log.AddHook(Hook{file: file, function: function, line: line})
+func AddHook(file, line, function bool, levels []log.Level) {
+	log.AddHook(Hook{
+		mu:       &sync.Mutex{},
+		file:     file,
+		line:     line,
+		function: function,
+		levels:   levels,
+	})
 }
 
 // Hook is ...
 type Hook struct {
+	mu       *sync.Mutex
 	file     bool
-	function bool
 	line     bool
+	function bool
+	levels   []log.Level
 }
 
 // Levels is ...
 func (h Hook) Levels() []log.Level {
-	return log.AllLevels
+	return h.levels
 }
 
 // Fire is ...
@@ -47,15 +62,21 @@ func (h Hook) Fire(entry *log.Entry) error {
 		if !strings.Contains(name, "github.com/Sirupsen/logrus") {
 			file, line := fu.FileLine(pc[i] - 1)
 			if h.file {
+				h.mu.Lock()
 				entry.Data["file"] = path.Base(file)
+				h.mu.Unlock()
 			}
 
 			if h.function {
+				h.mu.Lock()
 				entry.Data["func"] = path.Base(name)
+				h.mu.Unlock()
 			}
 
 			if h.line {
+				h.mu.Lock()
 				entry.Data["line"] = line
+				h.mu.Unlock()
 			}
 
 			break
