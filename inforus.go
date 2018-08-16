@@ -59,7 +59,7 @@ func (h Hook) Fire(entry *log.Entry) error {
 	for i := 0; i < cnt; i++ {
 		fu := runtime.FuncForPC(pc[i])
 		name := fu.Name()
-		if !strings.Contains(name, "github.com/Sirupsen/logrus") {
+		if !strings.Contains(name, "github.com/sirupsen/logrus") {
 			file, line := fu.FileLine(pc[i] - 1)
 			if h.file {
 				h.mu.Lock()
